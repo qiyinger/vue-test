@@ -7,6 +7,7 @@
       :isShowDetail="isShowDetail"
       :detail="detailData"
       @close-detail="handleCloseDetail"/>
+    <system-search :query="query" @querySystem="fetchData"/>
     <d2-crud
       ref="d2Crud"
       index-row
@@ -35,252 +36,255 @@
 </template>
 
 <script>
-//import Vue from 'vue'
-import D2Crud from '@d2-projects/d2-crud'
-import {mapActions} from 'vuex'
-import SystemInfoApi from '@/api/systemInfo'
-import SystemDialog from '../system-dialog'
-import _ from 'lodash'
+  //import Vue from 'vue'
+  import D2Crud from '@d2-projects/d2-crud'
+  import {mapActions} from 'vuex'
+  import SystemDialog from '../system-dialog';
+  import SystemInfoApi from '@/api/systemInfo';
+  import SystemSearch from '@/pages/common/sys-search';
+  import _ from 'lodash'
 
-//Vue.use(D2Crud)
+  //Vue.use(D2Crud)
 
-export default {
-  name:'system-table',
-  components:{D2Crud,SystemDialog},
-  computed: {
-    data() {
-      return _.cloneDeep(this.$store.state.systemInfo.res.records)
-    },
-    pagination() {
-      return _.cloneDeep(this.$store.state.systemInfo.res.page)
-    }
-  },
-  data() {
-    return {
-      isShowDetail: false,
-      detailData : {},
-      columns: [
-        {
-          title: '系统编号',
-          key: 'code',
-        },
-        {
-          title: '系统名称',
-          key: 'name'
-        },
-        {
-          title: '创建时间',
-          key: 'createTime'
-        },
-        {
-          title: '管理员',
-          key: 'userName',
-        },
-        {
-          title: '启用状态',
-          key: 'status',
-        },
-      ],
-      addButton: {
-        icon: 'el-icon-plus',
-        size: 'small'
+  export default {
+    name:'system-table',
+    components:{D2Crud, SystemDialog,SystemSearch},
+    computed: {
+      data() {
+        return _.cloneDeep(this.$store.state.systemInfo.res.records)
       },
-      rowHandle: {
-        columnHeader: '操作',
-        edit: {
-          icon: 'el-icon-edit',
-          text: '编辑',
-          size: 'small',
-          show (index, row) {
-            return true;
+      pagination() {
+        return _.cloneDeep(this.$store.state.systemInfo.res.page)
+      }
+    },
+    data() {
+      return {
+        query: {
+          code:'',
+          name:'',
+        },
+        isShowDetail: false,
+        detailData : {},
+        columns: [
+          {
+            title: '系统编号',
+            key: 'code',
           },
-          disabled (index, row) {
-            return false;
+          {
+            title: '系统名称',
+            key: 'name'
+          },
+          {
+            title: '创建时间',
+            key: 'createTime'
+          },
+          {
+            title: '管理员',
+            key: 'userName',
+          },
+          {
+            title: '启用状态',
+            key: 'status',
+          },
+        ],
+        addButton: {
+          icon: 'el-icon-plus',
+          size: 'small'
+        },
+        rowHandle: {
+          columnHeader: '操作',
+          edit: {
+            icon: 'el-icon-edit',
+            text: '编辑',
+            size: 'small',
+            show (index, row) {
+              return true;
+            },
+            disabled (index, row) {
+              return false;
+            }
+          },
+          remove: {
+            icon: 'el-icon-delete',
+            size: 'small',
+            fixed: 'right',
+            confirm: true,
+            show (index, row) {
+              return true;
+            },
+            disabled (index, row) {
+              return false;
+            }
           }
         },
-        remove: {
-          icon: 'el-icon-delete',
-          size: 'small',
-          fixed: 'right',
-          confirm: true,
-          show (index, row) {
-            return true;
+        addTemplate: {
+          code: {
+            title: '系统编号',
+            value: '',
+            component: {
+              span: 12
+            }
           },
-          disabled (index, row) {
-            return false;
-          }
+          name: {
+            title: '系统名称',
+            value: '',
+            component: {
+              span: 12
+            }
+          },
+          description: {
+            title: '系统描述',
+            value: '',
+            component: {
+              span: 24
+            }
+          },
+        },
+        editTemplate: {
+          code: {
+            title: '系统编号',
+            value: '',
+            component: {
+              span: 10,
+              disabled: true,
+
+            }
+          },
+          name: {
+            title: '系统名称',
+            value: '',
+            component: {
+              span: 10
+            }
+          },
+          description: {
+            title: '系统描述',
+            value: '',
+            component: {
+              span: 20
+            }
+          },
+        },
+        formRules: {
+          code: [ { required: true, message: '请输入系统编号', trigger: 'blur' } ],
+          name: [ { required: true, message: '请输入系统名称', trigger: 'blur' } ],
+          description: [ { required: false} ]
+        },
+        formOptions: {
+          labelWidth: '80px',
+          labelPosition: 'left',
+          saveLoading: false,
+          gutter: 20
+        },
+        loading: false,
+        page: {
+          currentPage: 1,
+          pageSize: 10,
+        },
+        options: {
+          stripe: true
+        }
+
+      }
+    },
+    watch: {
+      /* handleRowAdd: function () {
+         this.querySystemInfoPage({});
+       }*/
+    },
+    mounted() {
+      /* this.querySystemInfoPage({
+         id: "",
+         code: "",
+         name: "",
+         status: "",
+         startCreateTime: "",
+         endCreateTime: "",
+         createTime: "",
+         description: "",
+         rsskey: "",
+         userId: "",
+         userName: "",
+       });*/
+      this.fetchData();
+    },
+    methods: {
+      addRow () {
+        this.$refs.d2Crud.showDialog({
+          mode: 'add'
+        })
+      },
+      paginationCurrentChange (currentPage) {
+        this.page.currentPage = currentPage
+        this.fetchData()
+      },
+      fetchData () {
+        this.loading = true;
+        this.querySystemInfoPage({...this.page,...this.query});
+        this.loading = false;
+      },
+      handleRowAdd (row, done) {
+        this.formOptions.saveLoading = true
+        SystemInfoApi.save(row).then(() => {
+          this.$message({
+            message: '添加成功',
+            type: 'success'
+          })
+          this.querySystemInfoPage({...this.page});
+        }).catch();
+        done();
+        this.formOptions.saveLoading = false
+      },
+      handleRowEdit ({index, row}, done) {
+        this.formOptions.saveLoading = true
+        SystemInfoApi.update(row).then(() => {
+          this.$message({
+            message: '编辑成功',
+            type: 'success'
+          })
+          this.querySystemInfoPage({...this.page});
+        });
+        done()
+        this.formOptions.saveLoading = false
+      },
+      handleRowRemove ({index, row}, done) {
+        SystemInfoApi.deletes({"ids": row.id}).then(() => {
+          this.$message({
+            message: '删除成功',
+            type: 'success'
+          })
+          this.querySystemInfoPage({...this.page});
+        });
+        done()
+      },
+      handleDialogCancel (done) {
+        this.$message({
+          message: '取消保存',
+          type: 'warning'
+        });
+        done()
+        this.querySystemInfoPage({...this.page});
+      },
+      handleSelectionChange (selection) {
+      },
+      ...mapActions({
+        querySystemInfoPage: 'querySystemInfoPageAction', // 将 `this.add()` 映射为 `this.$store.dispatch('increment')`
+        saveSystemInfo: 'saveSystemInfoAction',
+        deleteSystemInfo: 'deleteSystemInfoAction',
+        updateSystemInfo: 'updateSystemInfoAction',
+      }),
+      cloneDeep(val){
+        return _.cloneDeep(val);
+      },
+      handleRowClick(row, column ,event) {
+        if (column.property === 'name') {
+          this.isShowDetail = true;
+          this.detailData = row;
         }
       },
-      addTemplate: {
-        code: {
-          title: '系统编号',
-          value: '',
-          component: {
-            span: 12
-          }
-        },
-        name: {
-          title: '系统名称',
-          value: '',
-          component: {
-            span: 12
-          }
-        },
-        description: {
-          title: '系统描述',
-          value: '',
-          component: {
-            span: 24
-          }
-        },
-      },
-      editTemplate: {
-        code: {
-          title: '系统编号',
-          value: '',
-          component: {
-            span: 10,
-            disabled: true,
-
-          }
-        },
-        name: {
-          title: '系统名称',
-          value: '',
-          component: {
-            span: 10
-          }
-        },
-        description: {
-          title: '系统描述',
-          value: '',
-          component: {
-            span: 20
-          }
-        },
-      },
-      formRules: {
-        code: [ { required: true, message: '请输入系统编号', trigger: 'blur' } ],
-        name: [ { required: true, message: '请输入系统名称', trigger: 'blur' } ],
-        description: [ { required: false} ]
-      },
-      formOptions: {
-        labelWidth: '80px',
-        labelPosition: 'left',
-        saveLoading: false,
-        gutter: 20
-      },
-      loading: false,
-      page: {
-        currentPage: 1,
-        pageSize: 10,
-      },
-      options: {
-        stripe: true
+      handleCloseDetail() {
+        this.isShowDetail = false;
       }
-
-    }
-  },
-  watch: {
-   /* handleRowAdd: function () {
-      this.querySystemInfoPage({});
-    }*/
-  },
-  mounted() {
-   /* this.querySystemInfoPage({
-      id: "",
-      code: "",
-      name: "",
-      status: "",
-      startCreateTime: "",
-      endCreateTime: "",
-      createTime: "",
-      description: "",
-      rsskey: "",
-      userId: "",
-      userName: "",
-    });*/
-    this.fetchData();
-  },
-  methods: {
-    addRow () {
-      this.$refs.d2Crud.showDialog({
-        mode: 'add'
-      })
-    },
-    paginationCurrentChange (currentPage) {
-      this.page.currentPage = currentPage
-      this.fetchData()
-    },
-    fetchData () {
-      this.loading = true;
-      this.querySystemInfoPage({...this.page});
-      this.loading = false;
-    },
-    handleRowAdd (row, done) {
-      this.formOptions.saveLoading = true
-      SystemInfoApi.save(row).then(() => {
-        this.$message({
-          message: '添加成功',
-          type: 'success'
-        })
-        this.querySystemInfoPage({...this.page});
-      }).catch();
-      done();
-      this.formOptions.saveLoading = false
-    },
-    handleRowEdit ({index, row}, done) {
-      this.formOptions.saveLoading = true
-      SystemInfoApi.update(row).then(() => {
-        this.$message({
-          message: '编辑成功',
-          type: 'success'
-        })
-      this.querySystemInfoPage({...this.page});
-      });
-      done()
-      this.formOptions.saveLoading = false
-    },
-    handleRowRemove ({index, row}, done) {
-      SystemInfoApi.deletes({"ids": row.id}).then(() => {
-        this.$message({
-          message: '删除成功',
-          type: 'success'
-        })
-      this.querySystemInfoPage({...this.page});
-      });
-      done()
-    },
-    handleDialogCancel (done) {
-      this.$message({
-        message: '取消保存',
-        type: 'warning'
-      });
-      done()
-      this.querySystemInfoPage({...this.page});
-    },
-    handleSelectionChange (selection) {
-      console.log(selection)
-    },
-    ...mapActions({
-      querySystemInfoPage: 'querySystemInfoPageAction', // 将 `this.add()` 映射为 `this.$store.dispatch('increment')`
-      saveSystemInfo: 'saveSystemInfoAction',
-      deleteSystemInfo: 'deleteSystemInfoAction',
-      updateSystemInfo: 'updateSystemInfoAction',
-    }),
-    cloneDeep(val){
-      return _.cloneDeep(val);
-    },
-    handleRowClick(row, event, column) {
-      if (column.property === 'name') {
-        this.isShowDetail = true;
-        this.detailData = row;
-      }
-      console.log("hahahhhhhaahhaa");
-    },
-    handleCloseDetail() {
-      this.isShowDetail = false;
     }
   }
-}
 </script>

@@ -3,6 +3,7 @@
     <!-- 使用方法请参考文档和示例 -->
     <!-- 文档： https://d2-projects.github.io/d2-admin-doc/zh/ecomicroservice-d2-crud/ -->
     <!-- 示例： https://d2-projects.github.io/d2-admin/#/demo/d2-crud/index -->
+    <micro-search :query="query" @query-micro="fetchData"/>
     <SystemDialog
       :isShowDetail="isShowDetail"
       :detail="detailData"
@@ -39,14 +40,16 @@
 import D2Crud from '@d2-projects/d2-crud'
 import {mapActions} from 'vuex'
 import MicroserviceApi from '@/api/microservice'
-import SystemDialog from '../microservice-dialog'
+import SystemDialog from '../microservice-dialog';
+import MicroSearch from '@/pages/common/micro-search';
+import util from '@/libs/util.js'
 import _ from 'lodash'
 
 //Vue.use(D2Crud)
 
 export default {
   name:'microservice-table',
-  components:{D2Crud,SystemDialog},
+  components:{D2Crud,SystemDialog,MicroSearch},
   computed: {
     data() {
       return _.cloneDeep(this.$store.state.microservice.res.records)
@@ -57,6 +60,11 @@ export default {
   },
   data() {
     return {
+      query: {
+        name:'',
+        code:'',
+        appId:'',
+      },
       isShowDetail: false,
       detailData : {},
       columns: [
@@ -225,7 +233,7 @@ export default {
     },
     fetchData () {
       this.loading = true;
-      this.queryMicroservicePage({...this.page});
+      this.queryMicroservicePage({...this.page,...this.query});
       this.loading = false;
     },
     handleRowAdd (row, done) {
@@ -282,12 +290,16 @@ export default {
     cloneDeep(val){
       return _.cloneDeep(val);
     },
-    handleRowClick(row, event, column) {
+    handleRowClick(row, column, event) {
       if (column.property === 'name') {
-        this.isShowDetail = true;
-        this.detailData = row;
+        //  this.isShowDetail = true;
+     //   this.detailData = row;
+     //   let name = 'microserviceDetail';
+        this.$router.push({
+          name: 'microservice-detail',
+          params: _.cloneDeep(row),
+        });
       }
-      console.log("hahahhhhhaahhaa");
     },
     handleCloseDetail() {
       this.isShowDetail = false;

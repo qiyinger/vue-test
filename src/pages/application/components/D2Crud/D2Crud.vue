@@ -3,10 +3,12 @@
     <!-- 使用方法请参考文档和示例 -->
     <!-- 文档： https://d2-projects.github.io/d2-admin-doc/zh/ecosystem-d2-crud/ -->
     <!-- 示例： https://d2-projects.github.io/d2-admin/#/demo/d2-crud/index -->
+
     <ApplicationDialog
       :isShowDetail="isShowDetail"
       :detail="detailData"
       @close-detail="handleCloseDetail"/>
+    <SystemSearch :query="query" @queryApplication="fetchData"/>
     <d2-crud
       ref="d2Crud"
       index-row
@@ -36,7 +38,8 @@
 
 <script>
 //import Vue from 'vue'
-import D2Crud from '@d2-projects/d2-crud'
+import D2Crud from '@d2-projects/d2-crud';
+import SystemSearch from '@/pages/common/application-search';
 import {mapActions} from 'vuex'
 import ApplicationApi from '@/api/application'
 import ApplicationDialog from '../application-dialog'
@@ -46,7 +49,7 @@ import _ from 'lodash'
 
 export default {
   name:'application-table',
-  components:{D2Crud,ApplicationDialog},
+  components:{D2Crud,ApplicationDialog,SystemSearch},
   computed: {
     data() {
       return _.cloneDeep(this.$store.state.application.res.records)
@@ -57,6 +60,11 @@ export default {
   },
   data() {
     return {
+      query: {
+        name:'',
+        code:'',
+        systemId:'',
+      },
       isShowDetail: false,
       detailData : {},
       columns: [
@@ -199,11 +207,6 @@ export default {
 
     }
   },
-  watch: {
-   /* handleRowAdd: function () {
-      this.queryApplicationPage({});
-    }*/
-  },
   mounted() {
    /* this.queryApplicationPage({
       id: "",
@@ -232,7 +235,7 @@ export default {
     },
     fetchData () {
       this.loading = true;
-      this.queryApplicationPage({...this.page});
+      this.queryApplicationPage({...this.page,...this.query});
       this.loading = false;
     },
     handleRowAdd (row, done) {
@@ -275,7 +278,7 @@ export default {
         type: 'warning'
       });
       done()
-      this.queryApplicationPage({...this.page});
+      this.queryApplicationPage({...this.page,...this.query});
     },
     handleSelectionChange (selection) {
       console.log(selection)
@@ -289,7 +292,7 @@ export default {
     cloneDeep(val){
       return _.cloneDeep(val);
     },
-    handleRowClick(row, event, column) {
+    handleRowClick(row, column, event) {
       if (column.property === 'name') {
         this.isShowDetail = true;
         this.detailData = row;

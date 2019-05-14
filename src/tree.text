@@ -1,0 +1,49 @@
+.
+├── App.vue
+├── api
+├── assets
+│   ├── style
+│   └── svg-icons
+│       └── index.js
+├── components
+├── i18n
+├── layouts
+│   └── HeaderAside
+│       ├── index.js
+│       ├── layout.vue
+│       └── mixins
+│           └── search.js
+├── libs
+│   ├── util.cookies.js
+│   ├── util.js
+├── main.js
+├── menu
+│   └── header.js
+├── menuConfig.js
+├── mock
+├── pages
+│   ├── Error404
+│   │   ├── index.js
+│   │   └── page.vue
+│   ├── Login
+│   │   ├── config
+│   │   ├── image
+│   │   │   └── logo.png
+│   │   ├── index.js
+│   │   ├── page.vue
+│   │   └── style.scss
+├── plugin
+│   └── open
+│       └── index.js
+├── router
+│   └── index.js
+├── routerConfig.js
+├── setting.js
+├── store
+│   ├── index.js
+│   └── modules
+│       └── management
+│           └── systemInfo.js
+└── tree.text
+
+152 directories, 242 files

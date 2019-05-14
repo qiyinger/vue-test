@@ -3,11 +3,20 @@ import ApplicationApi from '@/api/application'
 export default {
   state: {
     res: {},
+    list: {},
   },
   actions: {
     queryApplicationPageAction({commit}, data){
       ApplicationApi.page(data).then(res => {
         commit('queryApplicationPageMutations', res);
+      })
+      .catch(err => {
+        // 异常情况
+      })
+    },
+    queryApplicationSelectListAction({commit}, data){
+      ApplicationApi.selectList(data).then(res => {
+        commit('queryApplicationSelectListMutations', res);
       })
       .catch(err => {
         // 异常情况
@@ -51,7 +60,9 @@ export default {
   mutations: {
     queryApplicationPageMutations(state, res) {
       state.res = res;
-      console.warn(state.res);
+    },
+    queryApplicationSelectListMutations(state, res) {
+      state.list = res;
     },
     saveApplicationMutations(state, res) {
 

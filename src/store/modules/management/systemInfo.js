@@ -3,11 +3,20 @@ import SystemInfoApi from '@/api/systemInfo'
 export default {
   state: {
     res: {},
+    list:{},
   },
   actions: {
     querySystemInfoPageAction({commit}, data){
       SystemInfoApi.page(data).then(res => {
         commit('querySystemInfoPageMutations', res);
+      })
+      .catch(err => {
+        // 异常情况
+      })
+    },
+    querySystemInfoSelectListAction({commit}, data){
+      SystemInfoApi.selectList(data).then(res => {
+        commit('querySystemInfoSelectListMutations', res);
       })
       .catch(err => {
         // 异常情况
@@ -51,7 +60,9 @@ export default {
   mutations: {
     querySystemInfoPageMutations(state, res) {
       state.res = res;
-      console.warn(state.res);
+    },
+    querySystemInfoSelectListMutations(state, res) {
+      state.list = res;
     },
     saveSystemInfoMutations(state, res) {
 

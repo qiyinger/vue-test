@@ -31,10 +31,17 @@ const deletes = function (data) {
     data
   })
 }
-
+const selectList = function (data) {
+  return request({
+    url: '/microservice/selectList',
+    method: 'post',
+    data
+  })
+}
 export default {
   page,
   save,
   update,
   deletes,
+  selectList,
 }

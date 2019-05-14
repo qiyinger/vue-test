@@ -39,6 +39,48 @@ const asideMenuConfig = [
     path: '/microservice',
     icon: 'home',
   },
+  {
+    name: '接口',
+    icon: 'home',
+    children: [
+      {
+        name: '接口列表',
+        path: '/apiInfo',
+      },
+      {
+        name: '订阅审核',
+        path: '/apiApply',
+      },
+    ],
+  },
+  {
+    name: '网关',
+    icon: 'home',
+    children: [
+      {
+        name: '网关列表',
+        path: '/gateway',
+      },
+      {
+        name: '网关路由',
+        path: '/route',
+      },
+      {
+        name: 'IP策略',
+        path: '/strategyIp',
+      },
+    ],
+  },
+  {
+    name: '监控',
+    icon: 'home',
+    children: [
+      {
+        name: '概览',
+        path: '/dashboard',
+      },
+    ],
+  },
 ]; // 顶栏菜单配置
 // ice 不会修改 headerMenuConfig
 // 如果你需要功能开发之前就配置出菜单原型，可以只设置 name 字段

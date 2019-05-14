@@ -4,6 +4,7 @@
     <template slot="header">系统列表</template>
     <!-- 这里注意一下, props不能通过异步传值。。最好的方法是通过vuex的action进行分发，然后action调用mutations的同步方法 -->
     <system-table/>
+    <router-view/>
     <template slot="footer">自动生成 1 个组件</template>
   </d2-container>
 </template>

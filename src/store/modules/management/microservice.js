@@ -51,7 +51,6 @@ export default {
   mutations: {
     queryMicroservicePageMutations(state, res) {
       state.res = res;
-      console.warn(state.res);
     },
     saveMicroserviceMutations(state, res) {
 

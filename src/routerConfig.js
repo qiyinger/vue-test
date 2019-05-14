@@ -10,6 +10,18 @@ import Demo2 from './pages/Demo2';
 import SystemInfo from './pages/systemInfo';
 import Application from './pages/application';
 import Microservice from './pages/microservice';
+import MicroserviceDetail from './pages/microservice/components/microservice-detail';
+import SystemDetail from './pages/systemInfo/components/system-detail';
+import MicroserviceVersionDetail from './pages/microserviceVersion/components/version-detail';
+import ApiInfo from './pages/apiInfo';
+import RouteDetail from './pages/route/components/route-detail';
+import ApiApply from './pages/apiApply';
+import Route from './pages/route';
+import StrategyIp from './pages/strategyIp';
+import StrategyCall from './pages/strategyCall';
+import Gateway from './pages/gateway';
+import GatewayDetail from './pages/gateway/component/gateway-detail';
+import DashBoard from './pages/DashBoard';
 import HeaderAside from './layouts/HeaderAside'; // 变量名 routerConfig 为 iceworks 检测关键字
 // ice 会自动在这个变量下添加路由数据
 // 请不要修改名称
@@ -32,6 +44,26 @@ const routerConfig = [
     name: 'index',
     layout: HeaderAside,
     component: Index,
+  },
+  {
+    path: '/apiApply',
+    layout: HeaderAside,
+    component: ApiApply,
+  },
+  {
+    path: '/demo1',
+    name: 'demo1',
+    layout: HeaderAside,
+    component: Demo1,
+    meta: {
+      requiresAuth: true,
+      title: '演示 1',
+    },
+  },
+  {
+    path: '/demo2',
+    layout: HeaderAside,
+    component: Demo2,
   }, // 刷新页面 必须保留
   {
     path: '/refresh',
@@ -44,6 +76,64 @@ const routerConfig = [
       },
 
       render: h => h(),
+    },
+  },
+  {
+    path: '/systemInfo',
+    layout: HeaderAside,
+    component: SystemInfo,
+    meta: {
+      title: '系统',
+    },
+    children: [
+      {
+        path: '/detail',
+        name: 'system-detail',
+        layout: HeaderAside,
+        component: SystemDetail,
+        meta: {
+          title: '系统详情',
+        },
+      },
+    ],
+  },
+  {
+    path: '/microservice',
+    layout: HeaderAside,
+    name: 'microservice',
+    component: Microservice,
+    meta: {
+      title: '微服务',
+    },
+    children: [
+      {
+        path: '/detail',
+        name: 'microservice-detail',
+        layout: HeaderAside,
+        component: MicroserviceDetail,
+        meta: {
+          title: '微服务详情',
+        },
+        children: [
+          {
+            path: '/version/detail',
+            name: 'microserviceVersion-detail',
+            layout: HeaderAside,
+            component: MicroserviceVersionDetail,
+            meta: {
+              title: '微服务版本详情',
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    path: '/application',
+    layout: HeaderAside,
+    component: Application,
+    meta: {
+      title: '应用',
     },
   }, // 页面重定向 必须保留
   {
@@ -60,43 +150,59 @@ const routerConfig = [
     },
   },
   {
-    path: '/demo1',
-    name: 'demo1',
+    path: '/apiInfo',
     layout: HeaderAside,
-    component: Demo1,
-    meta: {
-      requiresAuth: true,
-      title: '演示 1',
-    },
+    component: ApiInfo,
   },
   {
-    path: '/demo2',
+    path: '/gateway',
+    name: 'gateway',
     layout: HeaderAside,
-    component: Demo2,
+    component: Gateway,
+    meta: {
+      title: '网关',
+    },
+    children: [
+      {
+        path: '/detail',
+        name: 'gateway-detail',
+        layout: HeaderAside,
+        component: GatewayDetail,
+        meta: {
+          title: '网关详情',
+        },
+      },
+    ],
   },
   {
-    path: '/systemInfo',
+    path: '/route',
+    name: 'route',
     layout: HeaderAside,
-    component: SystemInfo,
+    component: Route,
     meta: {
-      title: '系统',
+      title: '路由',
     },
+    children: [
+      {
+        path: '/detail',
+        name: 'route-detail',
+        layout: HeaderAside,
+        component: RouteDetail,
+        meta: {
+          title: '路由详情',
+        },
+      },
+    ],
   },
   {
-    path: '/application',
+    path: '/strategyIp',
     layout: HeaderAside,
-    component: Application,
-    meta: {
-      title: '应用',
-    },
+    component: StrategyIp,
   },
   {
-    path: '/microservice',
+    path: '/dashboard',
     layout: HeaderAside,
-    component: Microservice,
-    meta: {
-      title: '微服务',
-    },
+    component: DashBoard,
   },
 ]; // 不参与菜单显示的
 // ice 不会处理这部分

@@ -8,6 +8,14 @@ const page = function (data) {
   })
 };
 
+const selectList = function (data) {
+  return request({
+    url: '/systemInfo/selectList',
+    method: 'post',
+    data
+  })
+};
+
 const save = function (data) {
   return request({
     url: '/systemInfo/save',
@@ -37,4 +45,5 @@ export default {
   save,
   update,
   deletes,
+  selectList,
 }

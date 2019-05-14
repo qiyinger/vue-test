@@ -1,4 +1,6 @@
 import request from '@/plugin/axios'
+import axios from 'axios'
+const qs = require('qs')
 
 const page = function (data) {
   return request({
@@ -32,9 +34,17 @@ const deletes = function (data) {
   })
 }
 
+const selectList = function (data) {
+  return request({
+    url: '/application/selectList',
+    method: 'post',
+    data
+  })
+}
 export default {
   page,
   save,
   update,
   deletes,
+  selectList
 }
